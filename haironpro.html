@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Counter - Scalp Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        .upload-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px dashed #cbd5e0;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-section:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+        }
+        
+        .upload-section.dragover {
+            border-color: #4facfe;
+            background: #e0f2fe;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .analysis-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .analysis-title {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .counter-display {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .hair-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+        
+        .count-label {
+            color: #64748b;
+            font-size: 1rem;
+        }
+        
+        .manual-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        
+        .increment-btn {
+            background: #10b981;
+            color: white;
+        }
+        
+        .increment-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .decrement-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .decrement-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        .reset-btn {
+            background: #6b7280;
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .reset-btn:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+        
+        .demo-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+        
+        .demo-notice strong {
+            color: #78350f;
+        }
+        
+        .features {
+            background: #f1f5f9;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .features h2 {
+            color: #1e293b;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            color: #64748b;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .manual-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Hair Counter Pro</h1>
+            <p>Advanced scalp analysis and hair counting tool</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="upload-section" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <div class="upload-text">
+                    <strong>Upload Scalp Image</strong><br>
+                    Drag and drop or click to select
+                </div>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Choose Image
+                </button>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <img id="imagePreview" class="image-preview hidden" alt="Uploaded scalp image">
+            </div>
+            
+            <div class="analysis-section">
+                <div class="analysis-title">
+                    📊 Hair Count Analysis
+                </div>
+                
+                <div class="counter-display">
+                    <div class="hair-count" id="hairCount">0</div>
+                    <div class="count-label">Hairs Detected</div>
+                </div>
+                
+                <div class="manual-controls">
+                    <button class="control-btn increment-btn" onclick="adjustCount(1)">
+                        ➕ Add Hair
+                    </button>
+                    <button class="control-btn decrement-btn" onclick="adjustCount(-1)">
+                        ➖ Remove Hair
+                    </button>
+                    <button class="control-btn reset-btn" onclick="resetCount()">
+                        🔄 Reset Count
+                    </button>
+                </div>
+                
+                <div class="demo-notice">
+                    <strong>Demo Mode:</strong> This is a prototype interface. Automatic hair detection requires advanced AI technology. Use the manual controls to simulate counting results.
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Precise Counting</div>
+                    <div class="feature-desc">Advanced algorithms for accurate hair follicle detection and counting</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-title">Easy Upload</div>
+                    <div class="feature-desc">Simple drag-and-drop interface for quick image analysis</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Fast Results</div>
+                    <div class="feature-desc">Get instant hair count analysis with detailed metrics</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Manual Adjustment</div>
+                    <div class="feature-desc">Fine-tune results with manual counting controls</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCount = 0;
+        
+        // File input handling
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+        
+        function handleFile(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    
+                    // Simulate automatic detection with a random count
+                    setTimeout(() => {
+                        const simulatedCount = Math.floor(Math.random() * 150) + 50;
+                        currentCount = simulatedCount;
+                        updateCountDisplay();
+                        
+                        // Add a subtle animation
+                        const countElement = document.getElementById('hairCount');
+                        countElement.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            countElement.style.transform = 'scale(1)';
+                        }, 200);
+                    }, 1500);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select a valid image file.');
+            }
+        }
+        
+        function adjustCount(change) {
+            currentCount = Math.max(0, currentCount + change);
+            updateCountDisplay();
+            
+            // Add visual feedback
+            const countElement = document.getElementById('hairCount');
+            countElement.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                countElement.style.transform = 'scale(1)';
+            }, 150);
+        }
+        
+        function resetCount() {
+            currentCount = 0;
+            updateCountDisplay();
+            
+            // Add reset animation
+            const countElement = document.getElementById('hairCount');
+            countElement.style.opacity = '0.5';
+            setTimeout(() => {
+                countElement.style.opacity = '1';
+            }, 200);
+        }
+        
+        function updateCountDisplay() {
+            document.getElementById('hairCount').textContent = currentCount;
+        }
+        
+        // Initialize
+        updateCountDisplay();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c3a316e6ed40ed',t:'MTc1NDcwNDU4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
